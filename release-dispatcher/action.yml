@@ -76,7 +76,7 @@ runs:
     
     - name: "ManifestBot: Update Manifest"
       if: ${{ inputs.use-manifestbot == 'true' }}
-      uses: "imgg-devops/manifestbot@v1"
+      uses: "imgg-devops/manifestbot@main"
       with:
         file-path: ${{ inputs.manifestbot-file-path }}
         key: ${{ inputs.manifestbot-key }}
