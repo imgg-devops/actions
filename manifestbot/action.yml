@@ -6,13 +6,13 @@ inputs:
     description: 'The path to values-override.yaml relative to the manifest repository.'
     required: true
 
-  version-path:
-    description: 'The path to the version field in values-override.yaml.'
+  key:
+    description: 'The key to set the version field to.'
     required: true
     default: 'image.tag'
 
-  version:
-    description: 'The version of the resources to deploy.'
+  value:
+    description: 'The value to set the version field to.'
     required: true
 
   token:
@@ -33,7 +33,7 @@ runs:
       run: |
         sudo wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq;
         sudo chmod +x /usr/bin/yq;
-        yq eval -i ".${{ inputs.version-path }} = \"${{ inputs.version }}\"" "${{ inputs.file-path }}"
+        yq eval -i ".${{ inputs.key }} = \"${{ inputs.value }}\"" "${{ inputs.file-path }}"
     
     - name: 'ManifestBot: Commit and Push'
       shell: bash
@@ -41,8 +41,8 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
         GITHUB_ACTOR: ${{ github.actor }}
       run: |
-        git config --global user.name "Penguin Statistics DevOps"
-        git config --global user.email "devops@penguin-stats.io"
+        git config --global user.name "imgg-devops"
+        git config --global user.email "devops@imgg.dev"
         git add .
-        git commit -m "${{ inputs.file-path }}: update to ${{ inputs.version }}"
+        git commit -m "${{ inputs.file-path }}: update to ${{ inputs.value }}"
         git push
