@@ -69,7 +69,7 @@ runs:
         SENTRY_PROJECT: ${{ inputs.sentry-project }}
       with:
         environment: ${{ inputs.sentry-environment }}
-        version: ${{ inputs.version }}
+        version: "${{ inputs.sentry-project }}@${{ inputs.version }}"
         ignore_empty: true
 
     - name: "GitHub: Create Repository Release"
