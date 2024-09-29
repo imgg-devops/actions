@@ -20,6 +20,11 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: "Sign Image: Install Cosign"
+      uses: sigstore/cosign-installer@v3.6.0
+      with:
+        cosign-release: 'v2.4.0'
+
     - name: "Sign Image: Sign the images"
       env:
         IMAGES: ${{ inputs.images }}
