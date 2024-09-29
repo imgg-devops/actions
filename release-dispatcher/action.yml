@@ -40,10 +40,13 @@ inputs:
     description: 'The path to values-override.yaml relative to the manifest repository.'
     required: false
 
-  manifestbot-version-path:
-    description: 'The path to the version field in values-override.yaml.'
+  manifestbot-key:
+    description: 'The key to set the version field to.'
     required: false
-    default: 'image.tag'
+
+  manifestbot-value:
+    description: 'The value to set the version field to.'
+    required: false
   
   manifestbot-token:
     description: 'The token to use to push to the manifest repository. This is only required if use-manifestbot is true.'
@@ -76,6 +79,6 @@ runs:
       uses: "imgg-devops/manifestbot@v1"
       with:
         file-path: ${{ inputs.manifestbot-file-path }}
-        version-path: ${{ inputs.manifestbot-version-path }}
-        version: ${{ inputs.version }}
+        key: ${{ inputs.manifestbot-key }}
+        value: ${{ inputs.manifestbot-value }}
         token: ${{ inputs.manifestbot-token }}
