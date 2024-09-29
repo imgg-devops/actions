@@ -33,7 +33,7 @@ runs:
       run: |
         sudo wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq;
         sudo chmod +x /usr/bin/yq;
-        yq eval -i ".${{ inputs.key }} = \"${{ inputs.value }}\"" "${{ inputs.file-path }}"
+        yq eval -i "${{ inputs.key }} = \"${{ inputs.value }}\"" "${{ inputs.file-path }}"
     
     - name: 'ManifestBot: Commit and Push'
       shell: bash
