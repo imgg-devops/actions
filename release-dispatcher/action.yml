@@ -23,6 +23,11 @@ inputs:
   sentry-project:
     description: 'The Sentry project to use. This is only required if use-sentry is true.'
     required: false
+
+  sentry-environment:
+    description: 'The Sentry environment to use. This is only required if use-sentry is true.'
+    required: false
+    default: 'production'
   
   # destination: GitHub Release
   use-ghrelease:
@@ -63,7 +68,7 @@ runs:
         SENTRY_ORG: ${{ inputs.sentry-org }}
         SENTRY_PROJECT: ${{ inputs.sentry-project }}
       with:
-        environment: prod
+        environment: ${{ inputs.sentry-environment }}
         version: ${{ inputs.version }}
         ignore_empty: true
 
