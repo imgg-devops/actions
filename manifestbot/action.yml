@@ -7,9 +7,9 @@ inputs:
     required: true
 
   key:
-    description: 'The key to set the version field to.'
+    description: 'The key (in yq syntax) to set the version field to.'
     required: true
-    default: 'image.tag'
+    default: '.image.tag'
 
   value:
     description: 'The value to set the version field to.'
