@@ -1,0 +1,81 @@
+name: 'Release Dispatcher'
+description: 'The release dispatcher dispatches the release of a release to the desired destinations. This action is currently only intended to be used on production/stable releases. This action by default is a no-op, and you have to enable desired destinations by setting the corresponding inputs to true.'
+
+inputs:
+  version:
+    description: 'The version to release with. Example: v1.2.3. Recommended using outputs.semver from imgg-devops/actions/git-meta'
+    required: true
+  
+  # destination: Sentry
+  use-sentry:
+    description: 'Whether to create a release on Sentry. If true, you must also set the sentry-auth-token, sentry-org and sentry-project inputs.'
+    required: false
+    default: 'false'
+  
+  sentry-auth-token:
+    description: 'The auth token to use to create a release on Sentry. This is only required if use-sentry is true.'
+    required: false
+
+  sentry-org:
+    description: 'The Sentry organization to use. This is only required if use-sentry is true.'
+    required: false
+  
+  sentry-project:
+    description: 'The Sentry project to use. This is only required if use-sentry is true.'
+    required: false
+  
+  # destination: GitHub Release
+  use-ghrelease:
+    description: 'Whether to create a release on GitHub.'
+    required: false
+    default: 'false'
+  
+  # destination: ManifestBot
+  use-manifestbot:
+    description: 'Whether to update the manifests repository.'
+    required: false
+    default: 'false'
+
+  manifestbot-file-path:
+    description: 'The path to values-override.yaml relative to the manifest repository.'
+    required: false
+
+  manifestbot-version-path:
+    description: 'The path to the version field in values-override.yaml.'
+    required: false
+    default: 'image.tag'
+  
+  manifestbot-token:
+    description: 'The token to use to push to the manifest repository. This is only required if use-manifestbot is true.'
+    required: false
+  
+runs:
+  using: composite
+  steps:
+    - name: "Sentry: Create Release"
+      if: ${{ inputs.use-sentry == 'true' }}
+      uses: getsentry/action-release@v1
+      env:
+        SENTRY_AUTH_TOKEN: ${{ inputs.sentry-auth-token }}
+        SENTRY_ORG: ${{ inputs.sentry-org }}
+        SENTRY_PROJECT: ${{ inputs.sentry-project }}
+      with:
+        environment: prod
+        version: ${{ inputs.version }}
+        ignore_empty: true
+
+    - name: "GitHub: Create Repository Release"
+      if: ${{ inputs.use-ghrelease == 'true' }}
+      uses: "marvinpinto/action-automatic-releases@v1.2.1"
+      with:
+        repo_token: "${{ github.token }}"
+        prerelease: false
+    
+    - name: "ManifestBot: Update Manifest"
+      if: ${{ inputs.use-manifestbot == 'true' }}
+      uses: "imgg-devops/manifestbot@v1"
+      with:
+        file-path: ${{ inputs.manifestbot-file-path }}
+        version-path: ${{ inputs.manifestbot-version-path }}
+        version: ${{ inputs.version }}
+        token: ${{ inputs.manifestbot-token }}

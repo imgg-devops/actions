@@ -1,0 +1,36 @@
+name: 'Release Dispatcher'
+description: 'The release dispatcher dispatches the release of a release to the desired destinations. This action is currently only intended to be used on production/stable releases. This action by default is a no-op, and you have to enable desired destinations by setting the corresponding inputs to true.'
+
+inputs:
+  images:
+    description: 'The images to sign.'
+    required: true
+    type: string
+
+  cosign-private-key:
+    description: 'The private key to use to sign the image.'
+    required: true
+    type: string
+
+  certificate-identity:
+    description: 'The certificate identity to use to verify the image.'
+    required: true
+    type: string
+
+runs:
+  using: composite
+  steps:
+    - name: "Sign Image: Sign the images"
+      env:
+        IMAGES: ${{ inputs.images }}
+        PRIVATE_KEY: ${{ inputs.cosign-private-key }}
+      run: |
+        cosign sign --yes --key env://PRIVATE_KEY ${IMAGES}
+
+    - name: "Sign Image: Verify the images"
+      env:
+        IMAGES: ${{ inputs.images }}
+        PUBLIC_KEY: ${{ inputs.cosign-public-key }}
+        CERTIFICATE_IDENTITY: ${{ inputs.certificate-identity }}
+      run: |
+        cosign verify ${IMAGES} --certificate-identity ${CERTIFICATE_IDENTITY} --certificate-oidc-issuer https://token.actions.githubusercontent.com

@@ -1,0 +1,28 @@
+name: 'Git Metadata'
+description: 'This action extracts metadata from git context. It can be used to extract the current git tag, branch, commit hash, and more. Currently it extracts the commit sha and truncates it to the first 7 chars, as well extracting the git tag.'
+
+outputs:
+  mini-sha:
+    description: 'The first 7 chars of the commit sha. Example: 8b9d3f1'
+    value: ${{ steps.git-meta.outputs.minisha }}
+  
+  version:
+    description: 'The version from tag. Example: v1.2.3'
+    value: ${{ steps.git-meta.outputs.version }}
+  
+  version-label:
+    description: 'The version label of the commit. Example: v1.2.3+8b9d3f1'
+    value: ${{ steps.git-meta.outputs.versionlabel }}
+
+runs:
+  using: composite
+  steps:
+    - name: "Get Metadata"
+      id: git-meta
+      shell: bash
+      run: |
+        export TRUNCATED_GITHUB_SHA=$(echo ${{ github.sha }} | cut -c1-7);
+        export VERSION=${GITHUB_REF/refs\/tags\//};
+        echo "minisha=$TRUNCATED_GITHUB_SHA" >> $GITHUB_OUTPUT;
+        echo "version=$VERSION" >> $GITHUB_OUTPUT;
+        echo "versionlabel=$VERSION+$TRUNCATED_GITHUB_SHA" >> $GITHUB_OUTPUT;
